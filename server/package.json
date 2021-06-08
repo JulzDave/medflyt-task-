@@ -32,7 +32,7 @@
   "license": "MIT",
   "scripts": {
     "prestart": "npm run build",
-    "start": "env NODE_ENV=dev node build/app.js --debug",
+    "start": "node build/app.js --debug",
     "build": "tsc"
   }
 }
