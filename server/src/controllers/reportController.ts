@@ -28,7 +28,8 @@ export const getReport = async (req: Request, res: Response) => {
     try {
         result = await dbUtil.sqlToDB(sql, []);
         const report: Report = {
-            year: parseInt(req.params.year),
+            
+            year:parseInt(req.params.year),
             caregivers: []
         };
 

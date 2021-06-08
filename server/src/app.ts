@@ -40,7 +40,6 @@ if (cluster.isMaster) {
     // sampleController routes
     router.get('/servertime', sampleController.getTime);
     router.get('/reports/:year', reportCtrl.getReport);
-
     app.listen(config.port, function () {
         logger.info(`worker started: ${cluster.worker.id} | server listening on port: ${config.port}`);
     });

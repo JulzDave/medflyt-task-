@@ -17,26 +17,24 @@ const resType = t.type({
         })
     )
 });
-
 export type Report = t.TypeOf<typeof resType>;
 
 type State =
     | {
-          type: "Initial";
-      }
+        type: "Initial";
+    }
     | {
-          type: "Resolved";
-          report: Report;
-          isRefreshing: boolean;
-      }
+        type: "Resolved";
+        report: Report;
+        isRefreshing: boolean;
+    }
     | {
-          type: "Rejected";
-          error: string;
-      };
+        type: "Rejected";
+        error: string;
+    };
 
 function useDashboard(params: { year: number }) {
     const [state, setState] = React.useState<State>({ type: "Initial" });
-
     const startLoading = () => {
         setState((prevState) => {
             switch (prevState.type) {
@@ -55,12 +53,24 @@ function useDashboard(params: { year: number }) {
         return axios
             .get<unknown>(endpoint(`reports/${params.year}`))
             .then((response) => {
-                if (!resType.is(response)) {
+                console.log(response?.data)
+                if (!resType.is(response?.data)) {
                     console.error(PathReporter.report(resType.decode(response)).join(", "));
                     throw new Error("Error");
                 }
+                
+                response.data.caregivers = response.data.caregivers.reduce((accumulator: {
+                    name: string;
+                    patients: string[];
+                }[], current) => {
+                    const foundIndex = accumulator.findIndex(x => x.name === current.name)
+                    foundIndex !== -1 ?
+                        accumulator[foundIndex].patients.push(...current.patients)
+                        : accumulator.push({ name: current.name, patients: current.patients })
+                    return accumulator
+                }, [])
 
-                setState({ type: "Resolved", report: response, isRefreshing: false });
+                setState({ type: "Resolved", report: response.data, isRefreshing: false });
             })
             .catch(() => {
                 setState({ type: "Rejected", error: "Error" });
@@ -83,7 +93,7 @@ const Dashboard = () => {
         case "Rejected":
             return <ErrorView message={state.error} onClickRetry={actions.fetchReport} />;
         case "Resolved":
-            return <TableView {...state} />;
+            return <TableView {...{...state, fetch: actions.fetchReport} } />;
         default:
             assertNever(state);
             return <></>;

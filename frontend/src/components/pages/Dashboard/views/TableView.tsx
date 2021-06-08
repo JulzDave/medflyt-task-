@@ -14,6 +14,7 @@ import { Report } from "../Dashboard";
 interface Props {
     report: Report;
     isRefreshing: boolean;
+    fetch: Function;
 }
 
 const Header = styled(Center)`
@@ -32,6 +33,10 @@ const StyledTableView = styled.div`
     width: 1300px;
     max-width: 100%;
     gap: 16px;
+    overflow: auto;  
+    &::-webkit-scrollbar {
+        display: none;
+    }
 `;
 
 const { Table, Tr, Th, Td } = TableBlocks;
@@ -45,7 +50,7 @@ const TableView = (props: Props) => {
                 <PrimaryText>Year {props.report.year} - caregivers report</PrimaryText>
             </Header>
             <Row justifyContent="flex-end">
-                <Button>
+                <Button onClick={() => {props.fetch()}} >
                     <RefreshIcon />
                     <span>Refresh</span>
                 </Button>
@@ -63,7 +68,7 @@ const TableView = (props: Props) => {
                             <Td>{caregiver.name}</Td>
                             <Td>
                                 {caregiver.patients.length > 0 ? (
-                                    caregiver.patients
+                                    [caregiver.patients.join(', ')]
                                 ) : (
                                     <None />
                                 )}
