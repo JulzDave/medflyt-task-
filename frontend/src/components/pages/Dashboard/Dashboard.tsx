@@ -13,7 +13,8 @@ const resType = t.type({
     caregivers: t.array(
         t.type({
             name: t.string,
-            patients: t.array(t.string)
+            patients: t.array(t.string),
+            caregiver_id: t.number
         })
     )
 });
@@ -62,11 +63,12 @@ function useDashboard(params: { year: number }) {
                 response.data.caregivers = response.data.caregivers.reduce((accumulator: {
                     name: string;
                     patients: string[];
+                    caregiver_id: number;
                 }[], current) => {
-                    const foundIndex = accumulator.findIndex(x => x.name === current.name)
+                    const foundIndex = accumulator.findIndex(x => x.caregiver_id === current.caregiver_id)
                     foundIndex !== -1 ?
                         accumulator[foundIndex].patients.push(...current.patients)
-                        : accumulator.push({ name: current.name, patients: current.patients })
+                        : accumulator.push({ name: current.name, patients: current.patients, caregiver_id: current.caregiver_id })
                     return accumulator
                 }, [])
 
